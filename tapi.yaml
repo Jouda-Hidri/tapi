@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tapi
+spec:
+  selector:
+    matchLabels:
+      app: tapi
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: tapi
+    spec:
+      containers:
+        - name: tapi
+          image: tapi:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+          command: ["gunicorn", "--bind", "0.0.0.0:5000", "api:app"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tapi
+spec:
+  ports:
+    - protocol: "TCP"
+      port: 5000
+      targetPort: 5000
+  selector:
+    app: tapi
